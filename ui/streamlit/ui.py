@@ -1,4 +1,6 @@
 import streamlit as st
+import engine.docify as docify
+import engine.extractor as extractor
 
 st.set_page_config(
     layout="wide", page_title="Stark - Compte-rendus"
