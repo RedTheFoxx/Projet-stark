@@ -1,0 +1,27 @@
+### Actions à Entreprendre sur une Ventilation
+ 
+1. **Inspection Visuelle Générale**
+   - Vérifier l'état général du système de ventilation (propreté, intégrité des conduits et des composants).
+   - Rechercher des signes de détérioration, de corrosion ou de dommages physiques.
+ 
+2. **Vérification du Débit d’Air**
+   - Mesurer le débit d'air aux différentes bouches d'extraction et d'insufflation pour s'assurer qu'il respecte les spécifications.
+   - Comparer les débits mesurés aux valeurs requises par les normes ou les spécifications du fabricant.
+ 
+3. **Contrôle des Filtres**
+   - Inspecter l'état des filtres et vérifier s'ils doivent être nettoyés ou remplacés.
+   - S'assurer que les filtres sont bien installés et adaptés au système.
+ 
+4. **Nettoyage et Entretien des Conduits**
+   - Vérifier la propreté des conduits de ventilation et les nettoyer si nécessaire pour éviter l'accumulation de poussière et de contaminants.
+   - Contrôler l'absence d'obstructions dans les conduits.
+ 
+5. **Vérification des Ventilateurs et Moteurs**
+   - Inspecter les ventilateurs pour s'assurer qu'ils fonctionnent correctement et silencieusement.
+   - Vérifier l'état des moteurs, des courroies et des poulies, et lubrifier les pièces mobiles si nécessaire.
+ 
+
+6. **Contrôle des Dispositifs de Sécurité**
+   - Vérifier le bon fonctionnement des dispositifs de sécurité tels que les détecteurs de fumée, les clapets coupe-feu et les alarmes.
+   - S'assurer que les dispositifs de sécurité sont en place et opérationnels.
+ 

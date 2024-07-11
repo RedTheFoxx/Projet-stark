@@ -1,0 +1,15 @@
+Inspection Visuelle Générale
+
+Vérifier l'état général du Deshumidificateur(propreté, intégrité des composants, absence de fuites).
+-Rechercher des signes de détérioration, de corrosion ou de dommages physiques.
+-Vérification du Débit d'Air
+-Mesurer le débit d'air à la sortie du déshumidificateur  pour s'assurer qu'il respecte les spécifications.
+-Contrôle des Filtres
+-Tester les thermostats, les régulateurs de vitesse et les autres dispositifs de contrôle pour s'assurer qu'ils fonctionnent correctement.
+-Vérifier les paramètres de régulation pour garantir un fonctionnement optimal.
+-Mesurer les températures de l'air à l'entrée et à la sortie du déshumidificateur  pour évaluer l'efficacité du chauffage.
+-Vérifier le bon fonctionnement des dispositifs de sécurité tels que les thermostats de sécurité, les détecteurs de fumée et les alarmes.
+-Enregistrer toutes les observations et les mesures prises lors de la visite de contrôle.
+-S'assurer que le déshumidificateur  respecte les normes locales et internationales en vigueur.
+
+
