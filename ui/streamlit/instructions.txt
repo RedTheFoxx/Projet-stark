@@ -1,0 +1,12 @@
+## PROJET STARK - STREAMLIT UI ##
+
+Pour démarrer le streamlit :
+
+- pip install streamlit
+- streamlit run ui/concept streamlit/ui.py
+
+-------
+
+
+> Toutes les modifications faites dans le fichier source sont automatiquement appliquées sur le site via le bouton "Rerun".
+> Donc pas besoin de relancer l'interpréteur python à chaque modif. de code source.
