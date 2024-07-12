@@ -44,6 +44,7 @@ def count_records(file) -> int:
     df = pd.read_excel(file)
     return len(df)
 
+#TODO : Toutes les valeurs null doivent être remplacées par des chaines vides
 def extract_per_customer(file, filter) -> dict:
     df = pd.read_excel(file)
     df = df[df["Libellé site"] == filter]
