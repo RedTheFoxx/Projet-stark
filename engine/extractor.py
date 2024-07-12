@@ -44,13 +44,18 @@ def count_records(file) -> int:
     df = pd.read_excel(file)
     return len(df)
 
+def extract_per_customer(file, filter) -> dict:
+    df = pd.read_excel(file)
+    df = df[df["Libellé site"] == filter]
+    df.to_json(
+        f"temp/extracted_data_per_customer.json",
+        orient="records",
+        force_ascii=False,
+        date_format="iso",
+    )
+    with open(f"temp/extracted_data_per_customer.json", "r", encoding="utf-8") as file:
+        data = json.load(file)
+    return data
+
 if __name__ == "__main__":
-    print(
-        extract_all_lines(
-            pathlib.Path("ressources/data/extraits-Data-Interventions.xlsx")
-        )
-    )
-    print(
-        "Nombre d'enregistrements dans le fichier Excel : "
-        + str(count_records(pathlib.Path("ressources/data/extraits-Data-Interventions.xlsx")))
-    )
+    print(extract_per_customer(pathlib.Path("ressources/data/extraits-Data-Interventions-annuels_1.xlsx"), "DIEPPE COMMUN D'AGGLO SERVICE COLLECTE"))
