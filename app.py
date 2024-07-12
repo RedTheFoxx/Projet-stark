@@ -1,6 +1,8 @@
+import json
 import streamlit as st
 import engine.docify as docify
 import engine.extractor as extractor
+import engine.llm_mode_1 as llm_mode_1
 
 st.set_page_config(
     layout="wide", page_title="Stark - Compte-rendus"
@@ -30,8 +32,8 @@ with col1:
 with col2:
     st.subheader("Fichiers")
     uploaded_files = st.file_uploader(
-        "Déposez vos fichiers au format .xlsx ou .txt",
-        type=["xlsx", "txt"],
+        "Déposez vos fichiers au format .xlsx",
+        type=["xlsx"],
         accept_multiple_files=True,
     )
 
@@ -39,28 +41,19 @@ st.markdown("---")
 
 
 if st.button("Générer", type="primary", use_container_width=True):
-
-    # 1. Ici, on insérera la logique cablée à un Langchain (ou autre) pour gérer deux pipes en fonction du mode sélectionné sur le radio button.
-    # - Pour l'instant c'est du code de démo pour faire marcher l'interface joliment
-
-    # Si on a le temps, on fait le pipe 3 avec les deux fichiers .txt
-
-    with st.spinner("Génération du rapport en cours ..."):
-
-        import time
-
-        time.sleep(3)
-
-        st.success("Rapport prêt au téléchargement")
-        st.download_button(
-            label="Télécharger le rapport",
-            data="Contenu d'exemple",
-            file_name="rapport.txt",
-            mime="text/plain",
-        )
-
-# 2. A ce niveau, on pourrait ajouter une étape intermédiare pour prévisualiser le rapport avant de le télécharger
-# - et proposer à l'utilisateur d'en regénérer un si ça ne convient pas.
+    if mode == "CR d'intervention":
+        with st.spinner("Génération d'un rapport ..."):
+            for file in uploaded_files or []:
+                st.write("Nombre d'enregistrements détectés : " + str(extractor.count_records(file))) # On liste le nombre total d'enregistrements du fichier (on proposera de sélectionner)
+                data_to_process = (extractor.extract_all_lines(file))[0] # On sélectionne le premier enregistrement
+                generated_content = llm_mode_1.cook_report(data_to_process) # On génère le json intermédiaire
+                docify.make_intervention_report(generated_content) # On build le docx
+                st.success("Rapport généré avec succès !")
+                
+    if mode == "CR d'activité":
+        st.write("Mode d'activité non implémenté")
+    if mode == "CR avec gammes (non-implémenté)":
+        st.write("Mode gammes non implémenté")
 
 st.markdown("---")
 

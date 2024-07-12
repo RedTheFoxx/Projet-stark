@@ -5,7 +5,7 @@ import pandas as pd
 import json
 
 
-def extract_all_lines(path_excel_file: pathlib.Path) -> dict:
+def extract_all_lines(file) -> dict:
     """Extrait toutes les lignes d'un fichier Excel et les convertit en un dictionnaire.
 
     Cette fonction lit un fichier Excel, le convertit en JSON, puis charge ce JSON
@@ -21,18 +21,18 @@ def extract_all_lines(path_excel_file: pathlib.Path) -> dict:
         Cette fonction crée un fichier JSON temporaire dans le dossier 'temp/'
         avec le même nom que le fichier Excel d'entrée.
     """
-    df = pd.read_excel(path_excel_file)
+    df = pd.read_excel(file)
     df.to_json(
-        f"temp/{path_excel_file.stem}.json",
+        f"temp/extracted_data.json",
         orient="records",
         force_ascii=False,
         date_format="iso",
     )
-    with open(f"temp/{path_excel_file.stem}.json", "r", encoding="utf-8") as file:
+    with open(f"temp/extracted_data.json", "r", encoding="utf-8") as file:
         data = json.load(file)
     return data
 
-def count_records(path_excel_file: pathlib.Path) -> int:
+def count_records(file) -> int:
     """Compte le nombre de lignes d'un fichier Excel.
 
     Args:
@@ -41,7 +41,7 @@ def count_records(path_excel_file: pathlib.Path) -> int:
     Returns:
         Le nombre de lignes du fichier Excel.
     """
-    df = pd.read_excel(path_excel_file)
+    df = pd.read_excel(file)
     return len(df)
 
 if __name__ == "__main__":
