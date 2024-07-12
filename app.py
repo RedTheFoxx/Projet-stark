@@ -42,14 +42,19 @@ st.markdown("---")
 
 if st.button("Générer", type="primary", use_container_width=True):
     if mode == "CR d'intervention":
-        with st.spinner("Génération d'un rapport ..."):
+        with st.spinner("Traitement du lot en cours ..."):
             for file in uploaded_files or []:
-                st.write("Nombre d'enregistrements détectés : " + str(extractor.count_records(file))) # On liste le nombre total d'enregistrements du fichier (on proposera de sélectionner)
-                data_to_process = (extractor.extract_all_lines(file))[0] # On sélectionne le premier enregistrement
-                generated_content = llm_mode_1.cook_report(data_to_process) # On génère le json intermédiaire
-                docify.make_intervention_report(generated_content) # On build le docx
-                st.success("Rapport généré avec succès !")
+                nb_records = extractor.count_records(file)
+                st.write(f"Nombre d'enregistrements détectés : {nb_records}")
                 
+                all_data = extractor.extract_all_lines(file)
+                for i, data_to_process in enumerate(all_data):
+                    with st.spinner(f"Génération du rapport {i+1}/{nb_records} ..."):
+                        generated_content = llm_mode_1.cook_report(data_to_process)
+                        docify.make_intervention_report(generated_content, f"rapport_intervention_{i+1}")
+                
+                st.success(f"{nb_records} rapport(s) généré(s) avec succès !")
+
     if mode == "CR d'activité":
         st.write("Mode d'activité non implémenté")
     if mode == "CR avec gammes (non-implémenté)":

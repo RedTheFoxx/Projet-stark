@@ -5,7 +5,7 @@ from docx import Document
 from docx.shared import Inches
 
 
-def make_intervention_report(data):
+def make_intervention_report(data, file_name):
     data = json.loads(data) # On s'assure de convertir la string en entrée en dictionnaire Python
     doc = Document()
 
@@ -35,7 +35,7 @@ def make_intervention_report(data):
     doc.add_heading("Compte-rendu d'intervention", 2)
     doc.add_paragraph(data["Resume"])
 
-    doc.save("output/rapport_intervention.docx")
+    doc.save(f"output/{file_name}.docx")
 
 
 if __name__ == "__main__":
@@ -57,4 +57,4 @@ if __name__ == "__main__":
         N'hésitez pas à contacter le Centre de Relation Clients (CRC) au 0 800 80 93 00, disponible 24h/24 et 7j/7.""",
     }
 
-    make_intervention_report(test_data)
+    make_intervention_report(test_data, "test_rapport")
