@@ -24,14 +24,13 @@ def make_intervention_report(data):
     doc.add_heading("Rapport d'intervention", 0)
     doc.add_heading("Informations client", 2)
 
-    table = doc.add_table(rows=len(data) - 1, cols=2)
+    table = doc.add_table(rows=len(data) - 1, cols=2) # - 1 pour éviter d'avoir une ligne vide à la fin vu qu'on place "resume" plus bas
 
-    for i, (key, value) in enumerate(
-        data.items()
-    ):
-        if key != "Resume":
+    for i, (key, value) in enumerate(data.items()):
+        if key not in ["Resume", "Date d'intervention"]:
             table.cell(i, 0).text = key
             table.cell(i, 1).text = value
+
 
     doc.add_heading("Compte-rendu d'intervention", 2)
     doc.add_paragraph(data["Resume"])
