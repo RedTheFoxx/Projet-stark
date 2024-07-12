@@ -46,7 +46,7 @@ def cook_report(data):
 
 
 if __name__ == "__main__":
-    prompt_data = [
+    test_prompt_data = [
         {
             "N° Demande": "F20225044634",
             "Statut de la DI": "Cloturée",
@@ -62,5 +62,5 @@ if __name__ == "__main__":
         }
     ]
 
-    report = cook_report(prompt_data[0])
+    report = cook_report(test_prompt_data[0])
     print(report)
