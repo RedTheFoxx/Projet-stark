@@ -1,4 +1,5 @@
 # Le LLM_Mode correspond au numéro du projet dans l'énoncé
+import os
 import streamlit as st
 import engine.docify as docify
 import engine.extractor as extractor
@@ -6,9 +7,15 @@ import engine.llm_mode_1 as llm_mode_1
 import engine.llm_mode_3 as llm_mode_3
 
 # Configuration de la page
-st.set_page_config(
-    layout="wide", page_title="Stark - Compte-rendus"
-) 
+st.set_page_config(layout="wide", page_title="Stark - Compte-rendus")
+
+# Création des dossiers temp et output s'ils n'existent pas
+repositories = ["temp", "output"]
+for repository in repositories:
+    if not os.path.exists(repository):
+        os.makedirs(repository)
+
+# ------------------------------------------------------------------ #
 
 # En-tête de l'application
 st.image("ressources/data/logo_stark_white.png", width=300)
