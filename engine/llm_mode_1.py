@@ -12,6 +12,7 @@ client = AzureOpenAI(
     azure_endpoint=os.getenv("AZURE_OPENAI_ENDPOINT") or "",
 )
 
+
 def cook_report(data):
 
     response = client.chat.completions.create(
@@ -23,16 +24,21 @@ def cook_report(data):
                 "content": """
                 Tu es un assistant qui reçoit un JSON d'informations propres à une intervention 
                 et génère un rapport structuré au format JSON en retour. 
-                Tu ne dois pas inventer des informations que tu n'aurais pas eu dans le JSON d'entrée.
-                Le champ "Resume" doit être un texte complet d'un paragraphe qui résume ce qui s'est passé dans l'intervention sans
-                être trop créatif. Reste très factuel, adopte un ton professionnel, ne fais pas mention du nom d'un technicien intervenant.
-                Tu ne dois pas produire de ```json et de ``` comme préfixe et suffixe de ton résultat, tu dois produire le format JSON suivant : 
+                Tu ne dois pas inventer des informations que tu n'aurais pas eues dans le JSON d'entrée.
+                Le champ "Resume" doit être un texte complet composé d'un paragraphe dans lequel tu te 
+                présentes comme étant le technicien de chez Stark Industries qui est intervenu.
+                Résume ce qui s'est passé dans l'intervention sans être créatif. 
+                Reste très factuel, adopte un ton professionnel. Adresse toi au client directement en employant "Vous".
+                N'utilise pas le mot client. 
+                Tu ne dois pas produire de ```json et de ``` comme préfixe et suffixe de ton résultat, 
+                tu dois produire le format JSON suivant : 
                 {
                     "Date d'intervention": "JJ-MM-AAAA HH:MM:SS", 
                     "Libellé du site": "[A COMPLETER]", 
                     "Ville": "[A COMPLETER]", 
-                    "Motif": "[A COMPLETER]", 
-                    "Statut": "[A COMPLETER]", 
+                    "Motif": "[A COMPLETER avec le Message du client]", 
+                    "Statut": "[A COMPLETER]",
+                    "Intervenant": "[A COMPLETER]", 
                     "Resume": "[A COMPLETER]"
                 }
                 Le format JSON doit être strictement valide et conforme aux standards JSON.
@@ -46,7 +52,7 @@ def cook_report(data):
 
 
 if __name__ == "__main__":
-    test_prompt_data = [
+    prompt_data = [
         {
             "N° Demande": "F20225044634",
             "Statut de la DI": "Cloturée",
@@ -62,5 +68,5 @@ if __name__ == "__main__":
         }
     ]
 
-    report = cook_report(test_prompt_data[0])
+    report = cook_report(prompt_data[0])
     print(report)
