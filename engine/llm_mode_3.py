@@ -46,7 +46,8 @@ def cook_report_interventions(data):
 
 #TODO : Un résumé qui est généré à partir d'une liste entière d'interventions
 #TODO : Penser à récupérer la fréquence des interventions
-def cook_report_resume(data):
+def cook_report_resume(data : list) -> str:
+    all_interventions = "".join(data)
     response = client.chat.completions.create(
         model=os.getenv("AZURE_OPENAI_MODEL") or "",
         temperature=0,
@@ -54,14 +55,15 @@ def cook_report_resume(data):
             {
                 "role": "system",
                 "content": """
-                TODO PROMPT 
+                Tu es un assistant qui produit un bilan annuel sur la base d'une liste d'interventions résumées. Rédige un paragraphe argumenté
+                sur les données qui te sont fournies en entrée. N'invente aucune information. Ton format de sortie doit être une string. 
                 """
             },
-            {"role": "user", "content": json.dumps(data)}
+            {"role": "user", "content": all_interventions}
         ],
     )
 
-    return response.choices[0].message.content
+    return response.choices[0].message.content or ""
 
 
 

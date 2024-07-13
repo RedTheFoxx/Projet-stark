@@ -82,12 +82,10 @@ if st.button("Générer", type="primary", use_container_width=True):
                             for i, data_to_process in enumerate(customer_records):
                                 generated_interventions = llm_mode_3.cook_report_interventions(data_to_process)
                                 all_interventions.append(generated_interventions)
-                                
-                            print(all_interventions)
-                            st.stop()
                             
-                            #TODO : On envoie tout le dico. des interventions au second prompt pour faire un bilan
-                            # generated_content = llm_mode_3.cook_report_resume(all_interventions)
+                            generated_content = llm_mode_3.cook_report_resume(all_interventions)
+                            print(generated_content)
+                            st.stop()
                             
                             #TODO : On créé le docx
                             # docify.make_activity_report(filter, all_interventions, generated_content, f"rapport_activite_{i+1}")

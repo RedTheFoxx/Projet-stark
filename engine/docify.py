@@ -60,7 +60,7 @@ Cordialement,"""
 
 
 def make_activity_report(
-    data_customer_site, data_interventions, data_report, file_name
+    data_customer_site : str, data_interventions : list, data_report : str, file_name : str
 ):
 
     # data_interventions = json.loads(data_interventions)
