@@ -1,15 +1,17 @@
+# Le LLM_Mode correspond au numéro du projet dans l'énoncé
 import streamlit as st
 import engine.docify as docify
 import engine.extractor as extractor
 import engine.llm_mode_1 as llm_mode_1
 import engine.llm_mode_3 as llm_mode_3
 
+# Configuration de la page
 st.set_page_config(
     layout="wide", page_title="Stark - Compte-rendus"
-)  # Mode large par défaut de streamlit et titre de page
+) 
 
-# Markdown simple
-st.image("ressources/data/logo_stark.png", width=100)   
+# En-tête de l'application
+st.image("ressources/data/logo_stark_white.png", width=300)
 st.markdown(
     """
 # Stark - Rapports et compte-rendus
@@ -19,6 +21,7 @@ st.markdown(
 
 st.markdown("---")  # Une barre de séparation en markdown
 
+# Section de sélection du mode et d'upload de fichiers
 col1, col2 = st.columns(
     2
 )  # Deux colonnes pour aligner le champs d'upload et les radio boutons
@@ -40,7 +43,7 @@ with col2:
 
 st.markdown("---")
 
-
+# Bouton de génération et logique de traitement
 if st.button("Générer", type="primary", use_container_width=True):
     if mode == "CR d'intervention":
         with st.spinner("Traitement du lot en cours ..."):
@@ -65,37 +68,64 @@ if st.button("Générer", type="primary", use_container_width=True):
             "DIEPPE GYMNASE ROGE DESJARDIN MILLE CLUB",
             "NEUVILLE LES DIEPPE MATERNELLE MARIE CUR",
             "SERQUEUX MAIRIE ECOLE",
-            "DIEPPE HOTEL WINDSOR"
+            "DIEPPE HOTEL WINDSOR",
         ]
         for file in uploaded_files or []:
             with st.spinner("Extraction des données ..."):
-                
-                    filter = filters[0]
-                    customer_records = extractor.extract_per_customer(file, filter)
-                    
-                    if customer_records != [""]:
-                        
-                        st.write(f"Nombre d'interventions pour le client {filter} : {len(customer_records)}")
-                        with st.spinner("Génération des rapports ..."):
-                            
-                            all_interventions = []
-                            for i, data_to_process in enumerate(customer_records):
-                                generated_interventions = llm_mode_3.cook_report_interventions(data_to_process)
-                                all_interventions.append(generated_interventions)
-                            
-                            generated_content = llm_mode_3.cook_report_resume(all_interventions)
-                            print(generated_content)
-                            st.stop()
-                            
-                            #TODO : On créé le docx
-                            # docify.make_activity_report(filter, all_interventions, generated_content, f"rapport_activite_{i+1}")
-                    else:
-                        st.error(f"Aucune donnée trouvée pour le client {filter}")
-                        st.stop()
 
+                for filter in filters:
+                    with st.spinner(
+                        f"Extraction des données pour le client {filter}..."
+                    ):
+                        customer_records = extractor.extract_per_customer(file, filter)
+
+                    if customer_records != [""]:
+                        nb_interventions = len(customer_records)
+                        st.success(f"Données extraites avec succès pour {filter}")
+                        st.write(
+                            f"Nombre d'interventions trouvées : {nb_interventions}"
+                        )
+
+                        progress_bar = st.progress(0)
+                        all_interventions = []
+
+                        for i, data_to_process in enumerate(customer_records):
+                            with st.spinner(
+                                f"Traitement de l'intervention {i+1}/{nb_interventions} pour {filter}..."
+                            ):
+                                generated_interventions = (
+                                    llm_mode_3.cook_report_interventions(
+                                        data_to_process
+                                    )
+                                )
+                                all_interventions.append(generated_interventions)
+                            progress_bar.progress((i + 1) / nb_interventions)
+
+                        with st.spinner(
+                            f"Génération du résumé annuel pour {filter}..."
+                        ):
+                            generated_content = llm_mode_3.cook_report_resume(
+                                all_interventions
+                            )
+
+                        with st.spinner(
+                            f"Création du rapport d'activité final pour {filter}..."
+                        ):
+                            docify.make_activity_report(
+                                filter,
+                                all_interventions,
+                                generated_content,
+                                f"RA_{filter}",
+                            )
+
+                        st.success(f"Rapport d'activité généré pour {filter} !")
+                    else:
+                        st.warning(f"Aucune donnée trouvée pour le client {filter}")
+
+# Pied de page
 st.markdown("---")
 
-# J'avais envie
+# Car il faut bien s'amuser
 st.caption(
     "Vince & Red - Stark © 2024 / Toute utilisation de système basé sur de l'IA générative implique des principes de précaution et de responsabilité."
 )

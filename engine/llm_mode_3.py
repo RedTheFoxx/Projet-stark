@@ -14,7 +14,8 @@ client = AzureOpenAI(
 )
 
 
-def cook_report_interventions(data):
+# PROMPT DES INTERVENTIONS : Génère un résumé par intervention et sera ensuite utilisé pour produire le bilan annuel
+def cook_report_interventions(data: list) -> str:
     response = client.chat.completions.create(
         model=os.getenv("AZURE_OPENAI_MODEL") or "",
         temperature=0,
@@ -42,11 +43,11 @@ def cook_report_interventions(data):
         ],
     )
 
-    return response.choices[0].message.content
+    return response.choices[0].message.content or ""
 
-#TODO : Un résumé qui est généré à partir d'une liste entière d'interventions
-#TODO : Penser à récupérer la fréquence des interventions
-def cook_report_resume(data : list) -> str:
+
+# PROMPT DES BILAN : Génère un bilan annuel à partir d'une liste d'interventions résumées
+def cook_report_resume(data: list) -> str:
     all_interventions = "".join(data)
     response = client.chat.completions.create(
         model=os.getenv("AZURE_OPENAI_MODEL") or "",
@@ -57,39 +58,38 @@ def cook_report_resume(data : list) -> str:
                 "content": """
                 Tu es un assistant qui produit un bilan annuel sur la base d'une liste d'interventions résumées. Rédige un paragraphe argumenté
                 sur les données qui te sont fournies en entrée. N'invente aucune information. Ton format de sortie doit être une string. 
-                """
+                """,
             },
-            {"role": "user", "content": all_interventions}
+            {"role": "user", "content": all_interventions},
         ],
     )
 
     return response.choices[0].message.content or ""
 
 
-
 if __name__ == "__main__":
     test_prompt = [
         {
-        "N° Demande": "F2023453342834",
-        "Statut de la DI": "Cloturée",
-        "Demande avec STI": "OUI",
-        "Libellé site": "DIEPPE HOTEL WINDSOR",
-        "Date/heure création de la demande": "2023-12-08T03:06:00.000",
-        "Type de demande": "Alarme",
-        "Motif de sollicitation": "Autre - Alarme technique",
-        "Message du client": "016080:MINI TEMPERATURE DEPART PRIMAIRE FELMAN",
-        "statut OT": "Réalisé",
-        "Date/heure du RDV": "08/12/2023 7-12H",
-        "Date/heure début du processus d'attribution": "2023-12-08T03:06:00.000",
-        "Pris en charge par": "Jason Ayers",
-        "Date/heure affectation au tech": "2023-12-08T07:25:00.000",
-        "Date/heure début d'intervention": "2023-12-08T07:25:00.000",
-        "Message du Client 2": "",
-        "Date/heure fin d'intervention": "2023-12-08T07:55:00.000",
-        "Date/heure de description du BI": "2023-12-08T07:25:00.000",
-        "Problème réglé": "Oui",
-        "Message au client": "Demande traitée",
-        "Commentaire interne": ""
+            "N° Demande": "F2023453342834",
+            "Statut de la DI": "Cloturée",
+            "Demande avec STI": "OUI",
+            "Libellé site": "DIEPPE HOTEL WINDSOR",
+            "Date/heure création de la demande": "2023-12-08T03:06:00.000",
+            "Type de demande": "Alarme",
+            "Motif de sollicitation": "Autre - Alarme technique",
+            "Message du client": "016080:MINI TEMPERATURE DEPART PRIMAIRE FELMAN",
+            "statut OT": "Réalisé",
+            "Date/heure du RDV": "08/12/2023 7-12H",
+            "Date/heure début du processus d'attribution": "2023-12-08T03:06:00.000",
+            "Pris en charge par": "Jason Ayers",
+            "Date/heure affectation au tech": "2023-12-08T07:25:00.000",
+            "Date/heure début d'intervention": "2023-12-08T07:25:00.000",
+            "Message du Client 2": "",
+            "Date/heure fin d'intervention": "2023-12-08T07:55:00.000",
+            "Date/heure de description du BI": "2023-12-08T07:25:00.000",
+            "Problème réglé": "Oui",
+            "Message au client": "Demande traitée",
+            "Commentaire interne": "",
         }
     ]
 

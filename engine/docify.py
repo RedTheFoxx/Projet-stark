@@ -60,12 +60,8 @@ Cordialement,"""
 
 
 def make_activity_report(
-    data_customer_site : str, data_interventions : list, data_report : str, file_name : str
+    data_customer_site: str, data_interventions: list, data_report: str, file_name: str
 ):
-
-    # data_interventions = json.loads(data_interventions)
-    # data_report = json.loads(data_report)
-    # data_customer_site = json.loads(data_customer_site)
 
     doc = Document()
 
@@ -90,9 +86,16 @@ def make_activity_report(
 
     doc.add_heading("Compte-rendu d'interventions :", 2)
     doc.add_paragraph("----------------------------------------------")
-    for i, intervention in enumerate(data_interventions):
+    for i, intervention_str in enumerate(data_interventions):
+        # Chaque élément de la liste étant une chaine JSON valable, on peut les utiliser
+        intervention = json.loads(intervention_str)
         doc.add_heading(f"Intervention n°{i+1}", 3)
-        doc.add_paragraph(intervention)
+        # Si une chaine est vide, on insère un placeholder "Non spécifiée"
+        doc.add_paragraph(
+            f"Date : {intervention.get('Intervention du ', 'Non spécifiée')}"
+        )
+        doc.add_paragraph(f"Durée : {intervention.get('Durée', 'Non spécifiée')}")
+        doc.add_paragraph(intervention.get("Résumé", "Aucun résumé disponible"))
 
     doc.add_heading("Bilan annuel :", 2)
     doc.add_paragraph(data_report)
@@ -102,34 +105,18 @@ def make_activity_report(
 
 if __name__ == "__main__":
 
-    test_data = {
-        "Date d'intervention": "04/05/2022",
-        "Libellé du site": "Paris 75011 RESIDENCE DUQUN",
-        "Ville": "PARIS",
-        "Motif": "Chauffage - Autre motif à préciser",
-        "Statut": "Un agent est intervenu hier, la chaudière a fonctionné 2 heures.\n\nUne nouvelle intervention ce matin, et à nouveau la chaudière ne fonctionne plus.",
-        "Resume": """Bonjour,
-        Je suis John Doe, technicien chez Stark Industries, et je me permets de vous écrire suite à mon intervention chez vous le 04/05/2022 à 14h47.
-        Je me suis rendu à l'adresse suivante : Paris CAUX IMMOBILIER pour régler un problème de chauffage.
-        En effet, vous avez fait appel à nos services pour signaler un manque de chauffage dans votre habitation.
-        Après avoir examiné votre chaudière, j'ai constaté que l'horloge était complètement décalée.
-        Je suis donc intervenu pour régler ce dysfonctionnement.
-        Je suis ravi de vous informer que l'intervention a été un succès et que votre chaudière fonctionne à présent correctement.
-        Nous tenons à vous remercier pour votre confiance et restons à votre disposition pour toute information complémentaire.
-        N'hésitez pas à contacter le Centre de Relation Clients (CRC) au 0 800 80 93 00, disponible 24h/24 et 7j/7.""",
-    }
-
-    data_customer_site = "Paris 75011 RESIDENCE DUQUN"
+    data_customer_site = "DIEPPE CHATEAU MUSEE"
 
     data_interventions = [
-        "Celle-ci est la première inter. résumée.",
-        "Celle-ci est la deuxième inter. résumée.",
-        "Celle-ci est la troisième inter. résumée.",
+        '{\n    "Intervention du ": "02-05-2023 09:39:00",\n    "Durée": "00:30:00",\n    "Résumé": "Le client a demandé l\'arrêt du chauffage pour permettre à l\'entreprise VALLET de remplacer les canalisations. L\'intervention a été réalisée le 2 mai 2023 et le chauffage a été coupé pour les travaux."\n}',
+        '{\n    "Intervention du ": "25-01-2023 14:00:00",\n    "Durée": "00:30:00",\n    "Résumé": "Le client a signalé un problème de chauffage dans le restaurant du Forges Hôtel, mentionnant qu\'il faisait très froid. L\'intervention a été réalisée et le problème de chauffage a été résolu. Le technicien a consigné les températures."\n}',
+        '{\n    "Intervention du ": "12-01-2023 11:44:00",\n    "Durée": "02:11:00",\n    "Résumé": "Le client a signalé un arrêt de chauffage malgré une intervention précédente. Nous avons ajusté le départ régulé et contrôlé la température à 18,6°C, ainsi que le bon fonctionnement général de l\'installation."\n}',
+        '{\n    "Intervention du ": "21-12-2023 07:53:00",\n    "Durée": "08:45:00",\n    "Résumé": "Intervention demandée pour un bruit assourdissant dans le bureau des marchés publics à Walter Heights. Problème réglé. Intervention effectuée sans remarque ou alerte particulière de la part du technicien."\n}',
+        '{\n    "Intervention du ": "29-11-2023 12:10:00",\n    "Durée": "00:00:00",\n    "Résumé": "Le client a signalé un défaut de pressostat ECS et un nombre maximum de communications par heure atteint. L\'intervention a été effectuée sans remarque ou alerte particulière de la part du technicien."\n}',
     ]
 
-    data_report = "BLABLABLA CECI EST UN RESUME ANNUEL BLABLABLA"
+    data_report = "BLOC QUI PARLE DU RESUME ANNUEL"
 
-    # make_intervention_report(test_data, "test_rapport")
     make_activity_report(
-        data_customer_site, data_interventions, data_report, "test_rapport"
+        data_customer_site, data_interventions, data_report, "rapport_de_test"
     )
