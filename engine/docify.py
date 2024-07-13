@@ -86,11 +86,17 @@ def make_activity_report(
 
     doc.add_heading("Compte-rendu d'interventions :", 2)
     doc.add_paragraph("----------------------------------------------")
-    for i, intervention_str in enumerate(data_interventions):
-        # Chaque élément de la liste étant une chaine JSON valable, on peut les utiliser
-        intervention = json.loads(intervention_str)
+    
+    # On trie dans l'ordre chronologique avant d'ajouter paragraphes par paragraphes
+    interventions_triees = sorted(
+        [json.loads(intervention_str) for intervention_str in data_interventions],
+        key=lambda x: datetime.strptime(x.get('Intervention du ', '01-01-1900 00:00:00'), '%d-%m-%Y %H:%M:%S')
+    )
+    
+    # ---------------------------------------------------------------------------- #
+    
+    for i, intervention in enumerate(interventions_triees):
         doc.add_heading(f"Intervention n°{i+1}", 3)
-        # Si une chaine est vide, on insère un placeholder "Non spécifiée"
         doc.add_paragraph(
             f"Date : {intervention.get('Intervention du ', 'Non spécifiée')}"
         )
