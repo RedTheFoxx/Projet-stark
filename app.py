@@ -70,27 +70,30 @@ if st.button("Générer", type="primary", use_container_width=True):
         for file in uploaded_files or []:
             with st.spinner("Extraction des données ..."):
                 
+                    filter = filters[0]
                     customer_records = extractor.extract_per_customer(file, filter)
                     
-                    # if customer_records != [""]:
+                    if customer_records != [""]:
                         
-                    #     st.write(f"Nombre d'interventions pour le client {filter} : {len(customer_records)}")
-                    #     with st.spinner("Génération des rapports ..."):
+                        st.write(f"Nombre d'interventions pour le client {filter} : {len(customer_records)}")
+                        with st.spinner("Génération des rapports ..."):
                             
-                    #         #TODO : On fait un résumé par ligne d'intervention
-                    #         all_interventions = []
-                    #         for i, data_to_process in enumerate(customer_records):
-                    #             generated_interventions = llm_mode_3.cook_report_interventions(data_to_process)
-                    #             all_interventions.append(generated_interventions)
+                            all_interventions = []
+                            for i, data_to_process in enumerate(customer_records):
+                                generated_interventions = llm_mode_3.cook_report_interventions(data_to_process)
+                                all_interventions.append(generated_interventions)
+                                
+                            print(all_interventions)
+                            st.stop()
                             
-                    #         #TODO : On envoie tout le dico. des interventions au second prompt pour faire un bilan
-                    #         # generated_content = llm_mode_3.cook_report_resume(all_interventions)
+                            #TODO : On envoie tout le dico. des interventions au second prompt pour faire un bilan
+                            # generated_content = llm_mode_3.cook_report_resume(all_interventions)
                             
-                    #         #TODO : On créé le docx
-                    #         # docify.make_activity_report(filter, all_interventions, generated_content, f"rapport_activite_{i+1}")
-                    # else:
-                    #     st.error(f"Aucune donnée trouvée pour le client {filter}")
-                    #     st.stop()
+                            #TODO : On créé le docx
+                            # docify.make_activity_report(filter, all_interventions, generated_content, f"rapport_activite_{i+1}")
+                    else:
+                        st.error(f"Aucune donnée trouvée pour le client {filter}")
+                        st.stop()
 
 st.markdown("---")
 
