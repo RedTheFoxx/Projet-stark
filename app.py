@@ -2,6 +2,7 @@ import os
 import streamlit as st
 import zipfile
 import io
+from random import randint
 
 # Modules persos
 import engine.docify as docify          # Le compositeur de documents
@@ -53,19 +54,26 @@ with col1:
             "CR d'activité",
             "CR incluant des gammes (non-implémenté)",
         ],
+        key="mode_selection"
     )
+
+# On génère une nouvelle clef à la fois que l'état du widget au-dessus change (mode_selection)
+if 'widget_key' not in st.session_state or st.session_state.mode_selection != st.session_state.get('previous_mode'):
+    st.session_state.widget_key = str(randint(1000, 100000000))
+    st.session_state.previous_mode = st.session_state.mode_selection
 
 with col2:
     st.subheader("Fichier")
-    
-    # Quand on utilise le mode False, on gère un fichier zippé qui est incompatible avec l'application qui est construite pour gérer une liste de fichiers uploaddés ...
-    # On doit donc le laisser à True et faire attention à ne pas insérer plusieurs fichiers.
-    # Erreur de jeunesse !
     uploaded_files = st.file_uploader(
         "Déposez votre fichier au format .xlsx",
         type=["xlsx"],
         accept_multiple_files=True,
         help="Attention, seuls les fichiers destinés au projet Stark fonctionnent !",
+        
+        # La key permet de gérer l'état du widget selon certaines conditions
+        # Ici, dès que l'on change le mode des radios button, on envoie une nouvelle clef à ce widget qui est considéré comme "neuf"
+        # et donc le widget est réinitialisé.
+        key=st.session_state.widget_key
     )
 
 st.markdown("---")
@@ -131,7 +139,7 @@ if st.button("Générer", type="primary", use_container_width=True):
 
         filters = [
             "DIEPPE CHATEAU MUSEE",
-            "DIEPPE COMMUN D'AGGLO SERVICE COLLECTE",
+            # "DIEPPE COMMUN D'AGGLO SERVICE COLLECTE",
             # "DIEPPE GYMNASE ROGE DESJARDIN MILLE CLUB",
             # "NEUVILLE LES DIEPPE MATERNELLE MARIE CUR",
             # "SERQUEUX MAIRIE ECOLE",
