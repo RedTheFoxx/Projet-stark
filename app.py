@@ -132,10 +132,10 @@ if st.button("Générer", type="primary", use_container_width=True):
         filters = [
             "DIEPPE CHATEAU MUSEE",
             "DIEPPE COMMUN D'AGGLO SERVICE COLLECTE",
-            "DIEPPE GYMNASE ROGE DESJARDIN MILLE CLUB",
-            "NEUVILLE LES DIEPPE MATERNELLE MARIE CUR",
-            "SERQUEUX MAIRIE ECOLE",
-            "DIEPPE HOTEL WINDSOR"
+            # "DIEPPE GYMNASE ROGE DESJARDIN MILLE CLUB",
+            # "NEUVILLE LES DIEPPE MATERNELLE MARIE CUR",
+            # "SERQUEUX MAIRIE ECOLE",
+            # "DIEPPE HOTEL WINDSOR"
         ]
 
         # -------------------------------------------------------------------------------------------- #
@@ -194,9 +194,11 @@ if st.button("Générer", type="primary", use_container_width=True):
                     else:
                         st.warning(f"Aucune donnée trouvée pour le client {filter}")
 
-        # Une ligne par fichier à télécharger
+        # Une fois que tous les rapports sont générés
         if generated_reports:
             st.subheader("Télécharger les rapports générés")
+            
+            # Téléchargement individuel des rapports
             for report in generated_reports:
                 with open(f"output/{report}", "rb") as file:
                     st.download_button(
@@ -205,6 +207,20 @@ if st.button("Générer", type="primary", use_container_width=True):
                         file_name=report,
                         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                     )
+            
+            # Téléchargement de tous les rapports en ZIP
+            st.subheader("Tout télécharger (.zip)")
+            zip_buffer = io.BytesIO()
+            with zipfile.ZipFile(zip_buffer, "w") as zip_file:
+                for report in generated_reports:
+                    zip_file.write(f"output/{report}", report)
+
+            st.download_button(
+                label="Télécharger tous les rapports d'activité",
+                data=zip_buffer.getvalue(),
+                file_name="lot_rapports_activite.zip",
+                mime="application/zip",
+            )
 
     if mode == "CR avec gammes (non-implémenté)":
         st.warning("Ce mode n'est pas encore pris en charge !")
