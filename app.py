@@ -139,11 +139,11 @@ if st.button("Générer", type="primary", use_container_width=True):
 
         filters = [
             "DIEPPE CHATEAU MUSEE",
-            # "DIEPPE COMMUN D'AGGLO SERVICE COLLECTE",
-            # "DIEPPE GYMNASE ROGE DESJARDIN MILLE CLUB",
-            # "NEUVILLE LES DIEPPE MATERNELLE MARIE CUR",
-            # "SERQUEUX MAIRIE ECOLE",
-            # "DIEPPE HOTEL WINDSOR"
+            "DIEPPE COMMUN D'AGGLO SERVICE COLLECTE",
+            "DIEPPE GYMNASE ROGE DESJARDIN MILLE CLUB",
+            "NEUVILLE LES DIEPPE MATERNELLE MARIE CUR",
+            "SERQUEUX MAIRIE ECOLE",
+            "DIEPPE HOTEL WINDSOR"
         ]
 
         # -------------------------------------------------------------------------------------------- #
