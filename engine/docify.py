@@ -6,14 +6,23 @@ from datetime import datetime
 from docx import Document
 from docx.shared import Inches
 
+def make_intervention_report(data : str):
+    """Génère un rapport d'intervention au format docx.
 
-def make_intervention_report(data, file_name):
-    data = json.loads(
+    Args:
+        data (str): Données d'intervention en syntaxe JSON valide qu'il faudra convertir.
+
+    Returns:
+        Document: Document Word.
+    """
+    converted_data = json.loads( # On s'assure de convertir la string d'entrée en dictionnaire Python
         data
-    )  # On s'assure de convertir la string en entrée en dictionnaire Python
+    )
     doc = Document()
+    
     # Accès à la première section du document
     section = doc.sections[0]
+    
     # Définition des marges en pouces
     section.top_margin = Inches(0.5)
     section.bottom_margin = Inches(0.5)
@@ -24,7 +33,7 @@ def make_intervention_report(data, file_name):
         rows=1, cols=3
     )  # Case 1 : la date d'intervention et case 2, le logo de stark
     header_table.cell(0, 0).text = "\n\n\nDate d'intervention :"
-    header_table.cell(0, 1).text = "\n\n\n" + data["Date d'intervention"]
+    header_table.cell(0, 1).text = "\n\n\n" + converted_data["Date d'intervention"]
     logo_cell = header_table.cell(0, 2)
     logo_path = "ressources/data/logo_stark.png"
     logo_paragraph = logo_cell.paragraphs[0]
@@ -34,35 +43,45 @@ def make_intervention_report(data, file_name):
     doc.add_heading("Rapport d'intervention", 0)
     doc.add_heading("Informations client", 2)
 
-    table = doc.add_table(rows=len(data) - 1, cols=2)
-    for cell in table.columns[0].cells:
+    table = doc.add_table(rows=len(converted_data) - 1, cols=2)
+    
+    for cell in table.columns[0].cells: # On ajuste les tailles de chaque cellules en itérant dessus
         cell.width = Inches(1.25)
     for cell in table.columns[1].cells:
         cell.width = Inches(6)
 
-    for i, (key, value) in enumerate(data.items()):
+    for i, (key, value) in enumerate(converted_data.items()):
         if key not in ["Resume", "Date d'intervention", "Intervenant"]:
             table.cell(i, 0).text = key
             table.cell(i, 1).text = value
 
     doc.add_heading("Compte-rendu d'intervention\n", 2)
-    doc.add_paragraph(data["Resume"])
+    doc.add_paragraph(converted_data["Resume"])
     doc.add_paragraph(
         """Nous tenons à vous remercier pour votre confiance et restons à votre disposition pour toute information complémentaire.
-N'hésitez pas à contacter le Centre de Relation Clients (CRC) au 0 800 80 93 00, disponible 24h/24 et 7j/7.
-Nous tenons également à souligner l'importance de faire suivre votre matériel par un professionnel pour garantir sa qualité et sa durabilité.
+        N'hésitez pas à contacter le Centre de Relation Clients (CRC) au 0 800 80 93 00, disponible 24h/24 et 7j/7.
+        Nous tenons également à souligner l'importance de faire suivre votre matériel par un professionnel pour garantir sa qualité et sa durabilité.
 
-Cordialement,"""
+        Cordialement,"""
     )
 
-    doc.add_paragraph(data["Intervenant"])
-    doc.save(f"output/{file_name}.docx")
+    doc.add_paragraph(converted_data["Intervenant"])
 
+    return doc
 
 def make_activity_report(
-    data_customer_site: str, data_interventions: list, data_report: str, file_name: str
+    data_customer_site: str, data_interventions: list, data_report: str
 ):
+    """Génère un rapport d'activité au format docx.
 
+    Args:
+        data_customer_site (str): Le nom du client (qui est aussi le filtre principal sur les données d'entrée)
+        data_interventions (list): Liste des interventions en syntaxe JSON valide = un enregistrement par élément de liste.
+        data_report (str): Un bloc de texte représentant le bilan annuel généré sur la base des data_interventions
+
+    Returns:
+        Document: Document Word.
+    """
     doc = Document()
 
     header_table = doc.add_table(
@@ -86,15 +105,17 @@ def make_activity_report(
 
     doc.add_heading("Compte-rendu d'interventions :", 2)
     doc.add_paragraph("----------------------------------------------")
-    
+
     # On trie dans l'ordre chronologique avant d'ajouter paragraphes par paragraphes
     interventions_triees = sorted(
         [json.loads(intervention_str) for intervention_str in data_interventions],
-        key=lambda x: datetime.strptime(x.get('Intervention du ', '01-01-1900 00:00:00'), '%d-%m-%Y %H:%M:%S')
+        key=lambda x: datetime.strptime(
+            x.get("Intervention du ", "01-01-1900 00:00:00"), "%d-%m-%Y %H:%M:%S"
+        ),
     )
-    
+
     # ---------------------------------------------------------------------------- #
-    
+
     for i, intervention in enumerate(interventions_triees):
         doc.add_heading(f"Intervention n°{i+1}", 3)
         doc.add_paragraph(
@@ -106,7 +127,7 @@ def make_activity_report(
     doc.add_heading("Bilan annuel :", 2)
     doc.add_paragraph(data_report)
 
-    doc.save(f"output/{file_name}.docx")
+    return doc
 
 
 if __name__ == "__main__":
@@ -123,6 +144,7 @@ if __name__ == "__main__":
 
     data_report = "BLOC QUI PARLE DU RESUME ANNUEL"
 
-    make_activity_report(
-        data_customer_site, data_interventions, data_report, "rapport_de_test"
+    generated_doc = make_activity_report(
+        data_customer_site, data_interventions, data_report
     )
+    generated_doc.save("output/RA_test.docx")
