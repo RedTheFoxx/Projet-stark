@@ -1,3 +1,5 @@
+"""Module en charge des appels au LLM pour l'énoncé du projet 1."""
+
 import os
 import json
 from openai import AzureOpenAI
@@ -13,7 +15,15 @@ client = AzureOpenAI(
 )
 
 
-def cook_report(data):
+def cook_report(data) -> str:
+    """Appelle le LLM pour le mode 1 et génère un texte résumé par interventions.
+    
+    Args:
+        data (dict): Données d'intervention extraites en syntaxe JSON orientation RECORDS et qui seront passées au LLM comme prompt user.
+
+    Returns:
+        str: Un texte résumant une intervention en syntaxe JSON valide et qui comporte des clefs utiles. Sinon, une chaine vide.
+    """
 
     response = client.chat.completions.create(
         model=os.getenv("AZURE_OPENAI_MODEL") or "",
@@ -48,7 +58,7 @@ def cook_report(data):
         ],
     )
 
-    return response.choices[0].message.content
+    return response.choices[0].message.content or "" # Si rien ne se produisait alors on se contente de retourner la chaine vide
 
 
 if __name__ == "__main__":

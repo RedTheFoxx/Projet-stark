@@ -1,6 +1,7 @@
+"""Module en charge des appels au LLM pour l'énoncé du projet 3."""
+
 import os
 import json
-from urllib import response
 from openai import AzureOpenAI
 from dotenv import load_dotenv
 
@@ -14,8 +15,15 @@ client = AzureOpenAI(
 )
 
 
-# PROMPT DES INTERVENTIONS : Génère un résumé par intervention et sera ensuite utilisé pour produire le bilan annuel
 def cook_report_interventions(data: list) -> str:
+    """Appelle le LLM pour le mode 3 et génère un texte résumé par interventions.
+    
+    Args:
+        data: Données d'intervention extraites en syntaxe JSON orientation RECORDS, encapsulées dans une liste python, à passer au LLM comme prompt user.
+
+    Returns:
+        str: Un texte résumant une intervention en syntaxe JSON valide et qui comporte des clefs utiles. Sinon, une chaine vide.
+    """
     response = client.chat.completions.create(
         model=os.getenv("AZURE_OPENAI_MODEL") or "",
         temperature=0,
@@ -43,11 +51,18 @@ def cook_report_interventions(data: list) -> str:
         ],
     )
 
-    return response.choices[0].message.content or ""
+    return response.choices[0].message.content or "" # Si rien ne se produisait alors on se contente de retourner la chaine vide
 
 
-# PROMPT DES BILAN : Génère un bilan annuel à partir d'une liste d'interventions résumées
 def cook_report_resume(data: list) -> str:
+    """Appelle le LLM pour le mode 3 et génère un texte de bilan annuel.
+    
+    Args:
+        data: Une liste pyton de toutes les interventions résumées par cook_report_interventions. Une intervention par élément.
+
+    Returns:
+        str: Un bloc de texte résumant toutes les interventions sous format de bilan annuel.
+    """
     all_interventions = "".join(data)
     response = client.chat.completions.create(
         model=os.getenv("AZURE_OPENAI_MODEL") or "",
@@ -64,7 +79,7 @@ def cook_report_resume(data: list) -> str:
         ],
     )
 
-    return response.choices[0].message.content or ""
+    return response.choices[0].message.content or "" # Si rien ne se produisait alors on se contente de retourner la chaine vide
 
 
 if __name__ == "__main__":
