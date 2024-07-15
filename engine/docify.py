@@ -6,7 +6,8 @@ from datetime import datetime
 from docx import Document
 from docx.shared import Inches
 
-def make_intervention_report(data : str):
+
+def make_intervention_report(data: str):
     """Génère un rapport d'intervention au format docx.
 
     Args:
@@ -15,14 +16,14 @@ def make_intervention_report(data : str):
     Returns:
         Document: Document Word.
     """
-    converted_data = json.loads( # On s'assure de convertir la string d'entrée en dictionnaire Python
+    converted_data = json.loads(  # On s'assure de convertir la string d'entrée en dictionnaire Python
         data
     )
     doc = Document()
-    
+
     # Accès à la première section du document
     section = doc.sections[0]
-    
+
     # Définition des marges en pouces
     section.top_margin = Inches(0.5)
     section.bottom_margin = Inches(0.5)
@@ -41,33 +42,32 @@ def make_intervention_report(data : str):
     logo_run.add_picture(logo_path, width=Inches(2.5))
 
     doc.add_heading("Rapport d'intervention", 0)
-    doc.add_heading("Informations client", 2)
+    doc.add_heading("Informations client\n", 2)
 
-    table = doc.add_table(rows=len(converted_data) - 1, cols=2)
-    
-    for cell in table.columns[0].cells: # On ajuste les tailles de chaque cellules en itérant dessus
+    keys_to_display = ["Libellé du site", "Ville", "Motif", "Statut"]
+
+    table = doc.add_table(rows=len(keys_to_display), cols=2)
+
+    for cell in table.columns[0].cells:
         cell.width = Inches(1.25)
     for cell in table.columns[1].cells:
         cell.width = Inches(6)
 
-    for i, (key, value) in enumerate(converted_data.items()):
-        if key not in ["Resume", "Date d'intervention", "Intervenant"]:
+    for i, key in enumerate(keys_to_display):
+        if key in converted_data:
             table.cell(i, 0).text = key
-            table.cell(i, 1).text = value
+            table.cell(i, 1).text = converted_data[key]
 
     doc.add_heading("Compte-rendu d'intervention\n", 2)
     doc.add_paragraph(converted_data["Resume"])
     doc.add_paragraph(
-        """Nous tenons à vous remercier pour votre confiance et restons à votre disposition pour toute information complémentaire.
-        N'hésitez pas à contacter le Centre de Relation Clients (CRC) au 0 800 80 93 00, disponible 24h/24 et 7j/7.
-        Nous tenons également à souligner l'importance de faire suivre votre matériel par un professionnel pour garantir sa qualité et sa durabilité.
-
-        Cordialement,"""
+        """Nous tenons à vous remercier pour votre confiance et restons à votre disposition pour toute information complémentaire.\nN'hésitez pas à contacter le Centre de Relation Clients (CRC) au 0 800 80 93 00, disponible 24h/24 et 7j/7.\nNous tenons également à souligner l'importance de faire suivre votre matériel par un professionnel pour garantir sa qualité et sa durabilité.\nCordialement,"""
     )
 
     doc.add_paragraph(converted_data["Intervenant"])
 
     return doc
+
 
 def make_activity_report(
     data_customer_site: str, data_interventions: list, data_report: str
