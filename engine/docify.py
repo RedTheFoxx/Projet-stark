@@ -107,7 +107,7 @@ def make_activity_report(
     doc.add_paragraph("----------------------------------------------")
 
     # On trie dans l'ordre chronologique avant d'ajouter paragraphes par paragraphes
-    interventions_triees = sorted(
+    sorted_interventions = sorted(
         [json.loads(intervention_str) for intervention_str in data_interventions],
         key=lambda x: datetime.strptime(
             x.get("Intervention du ", "01-01-1900 00:00:00"), "%d-%m-%Y %H:%M:%S"
@@ -116,7 +116,7 @@ def make_activity_report(
 
     # ---------------------------------------------------------------------------- #
 
-    for i, intervention in enumerate(interventions_triees):
+    for i, intervention in enumerate(sorted_interventions):
         doc.add_heading(f"Intervention n°{i+1}", 3)
         doc.add_paragraph(
             f"Date : {intervention.get('Intervention du ', 'Non spécifiée')}"
