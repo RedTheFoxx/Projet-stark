@@ -2,13 +2,14 @@ import os
 import streamlit as st
 import zipfile
 import io
+import re  # appelé pour le traitement d'une chaîne de caractères
 from random import randint
 
 # Modules persos
-import engine.docify as docify          # Le compositeur de documents
-import engine.extractor as extractor    # L'extracteur de données
-import engine.llm_mode_1 as llm_mode_1  # Le LLM configuré pour le projet 1
-import engine.llm_mode_3 as llm_mode_3  # Le LLM configuré pour le projet 3
+import engine.docify as docify  # Le générateur de documents
+import engine.extractor as extractor  # L'extracteur de données
+import engine.llm_mode_1 as llm_mode_1  # Le LLM utilisé pour le projet 1
+import engine.llm_mode_3 as llm_mode_3  # Le LLM utilisé pour le projet 3
 
 # ------------------------------------------------------------------ #
 # Initialisation, création des dossiers et nettoyage des dossiers le cas échéant
@@ -16,7 +17,7 @@ import engine.llm_mode_3 as llm_mode_3  # Le LLM configuré pour le projet 3
 # Configuration de la page Streamlit
 st.set_page_config(layout="wide", page_title="Stark - Compte-rendus", page_icon="⚡")
 
-# Création des dossiers "temp" et "output" s'ils n'existent pas
+# Création des dossiers "temp" et "output" s'ils n'existent pas déjà
 repositories = ["temp", "output"]
 for repository in repositories:
     if not os.path.exists(repository):
@@ -30,11 +31,13 @@ for repository in repositories:
 # ------------------------------------------------------------------ #
 
 # En-tête de l'application
-st.image("ressources/data/logo_stark_white.png", width=350)
+st.image("ressources/data/logo_stark_red.png", width=350)
 st.markdown(
     """
 # Rapports et compte-rendus
-*Bienvenue sur votre interface de génération automatisée de rapports.*
+*Bienvenue sur votre interface de génération automatisée de rapports.*\n
+⚠️*Toute utilisation de système basé sur de l'IA générative implique des principes de précaution et de responsabilité.*\n 
+Le système peut être sujet à des hallucinations et impose une vérification humaine des données produites.
 """
 )
 
@@ -52,13 +55,16 @@ with col1:
         [
             "CR d'intervention",
             "CR d'activité",
-            "CR incluant des gammes (non-implémenté)",
+            "CR incluant des gammes (non disponible dans cette version)",
         ],
-        key="mode_selection"
+        key="mode_selection",
     )
 
 # On génère une nouvelle clef à la fois que l'état du widget au-dessus change (mode_selection)
-if 'widget_key' not in st.session_state or st.session_state.mode_selection != st.session_state.get('previous_mode'):
+if (
+    "widget_key" not in st.session_state
+    or st.session_state.mode_selection != st.session_state.get("previous_mode")
+):
     st.session_state.widget_key = str(randint(1000, 100000000))
     st.session_state.previous_mode = st.session_state.mode_selection
 
@@ -69,11 +75,10 @@ with col2:
         type=["xlsx"],
         accept_multiple_files=True,
         help="Attention, seuls les fichiers destinés au projet Stark fonctionnent !",
-        
         # La key permet de gérer l'état du widget selon certaines conditions
         # Ici, dès que l'on change le mode des radios button, on envoie une nouvelle clef à ce widget qui est considéré comme "neuf"
         # et donc le widget est réinitialisé.
-        key=st.session_state.widget_key
+        key=st.session_state.widget_key,
     )
 
 st.markdown("---")
@@ -91,10 +96,14 @@ if st.button("Générer", type="primary", use_container_width=True):
                 for i, data_to_process in enumerate(all_data):
                     with st.spinner(f"Génération du rapport {i+1}/{nb_records} ..."):
                         generated_content = llm_mode_1.cook_report(data_to_process)
+                        num_demande = re.split(r'[ ,"]+', generated_content)[
+                            5
+                        ]  # Récupére la référence de l'intervention
                         completed_doc = docify.make_intervention_report(
                             str(generated_content)
                         )
-                        output_file = f"output/RI_{i+1}.docx"
+
+                        output_file = "output/RI_" + num_demande + ".docx"
                         completed_doc.save(output_file)
                         generated_files.append(output_file)
 
@@ -143,7 +152,7 @@ if st.button("Générer", type="primary", use_container_width=True):
             "DIEPPE GYMNASE ROGE DESJARDIN MILLE CLUB",
             "NEUVILLE LES DIEPPE MATERNELLE MARIE CUR",
             "SERQUEUX MAIRIE ECOLE",
-            "DIEPPE HOTEL WINDSOR"
+            "DIEPPE HOTEL WINDSOR",
         ]
 
         # -------------------------------------------------------------------------------------------- #
@@ -196,7 +205,9 @@ if st.button("Générer", type="primary", use_container_width=True):
                                 generated_content,
                             )
                             completed_doc.save(f"output/RA_{filter}.docx")
-                            generated_reports.append(f"RA_{filter}.docx") # On ajoute le fichier généré dans la liste des téléchargements finaux
+                            generated_reports.append(
+                                f"RA_{filter}.docx"
+                            )  # On ajoute le fichier généré dans la liste des téléchargements finaux
 
                         st.success(f"Rapport d'activité généré pour {filter} !")
                     else:
@@ -205,7 +216,7 @@ if st.button("Générer", type="primary", use_container_width=True):
         # Une fois que tous les rapports sont générés
         if generated_reports:
             st.subheader("Télécharger les rapports générés")
-            
+
             # Téléchargement individuel des rapports
             for report in generated_reports:
                 with open(f"output/{report}", "rb") as file:
@@ -215,7 +226,7 @@ if st.button("Générer", type="primary", use_container_width=True):
                         file_name=report,
                         mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                     )
-            
+
             # Téléchargement de tous les rapports en ZIP
             st.subheader("Tout télécharger (.zip)")
             zip_buffer = io.BytesIO()
@@ -242,6 +253,4 @@ if st.button("Générer", type="primary", use_container_width=True):
 st.markdown("---")
 
 # Car il faut bien s'amuser
-st.caption(
-    "Vince & Red - Stark © 2024 / Toute utilisation de système basé sur de l'IA générative implique des principes de précaution et de responsabilité. Le système peut être sujet à des hallucinations et impose une vérification humaine des données produites."
-)
+st.caption("Vince & Red for Stark Industries © 2024")
