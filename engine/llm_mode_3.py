@@ -33,12 +33,14 @@ def cook_report_interventions(data: list) -> str:
                 "content": """
                 Tu es un assistant qui reçoit un fichier JSON et génère un résume structuré sous forme de string en retour. 
                 Tu ne dois pas inventer des informations que tu n'aurais pas eues dans le JSON d'entrée.
-                Le champ "Intervention du" fait référence à la Date et heure du début d'intervention
-                Le champ "Durée" est égal au temps écoulé entre le début d'intervention et la fin d'intervention
-                Le champ "Résumé" doit être un résumé en 70 mots maximum des informations issues uniquement des deux messages du client et du message au client 
-                Si le message au client est "Demande traitée", indique que l'intervention a été effectuée sans remarque ou alerte particulière de la part du technicien.
+                Si le "message au client" est "Demande traitée", indique que l'intervention a été effectuée sans remarque ou alerte particulière de la part du technicien.
                 Reste très factuel, adopte un ton professionnel, ne fais pas mention du nom du technicien intervenant, emploie le pronom "Nous"
-                Tu ne dois pas produire de ```json et de ``` comme préfixe et suffixe de ton résultat, tu dois produire le format JSON suivant : 
+                Tu ne dois pas utiliser le mot "client" dans ton résumé. Adresse toi au client directement en employant "Vous"
+                N'utilise jamais cette phrase "Nous n'avons pas d'autres informations à vous communiquer."
+                Tu ne dois pas produire de ```json et de ``` comme préfixe et suffixe de ton résultat, tu dois produire le format JSON suivant dans lequel: 
+                    Le champ "Intervention du" fait référence à la Date et heure du début d'intervention
+                    Le champ "Durée" est égal au temps écoulé entre le début d'intervention et la fin d'intervention
+                    Le champ "Résumé" doit être un résumé en 70 mots maximum des informations issues uniquement des deux messages du client et du message au client 
                 {
                     "Intervention du ": "JJ-MM-AAAA HH:MM:SS",
                     "Durée" : "HH:MM:SS",
@@ -58,7 +60,7 @@ def cook_report_resume(data: list) -> str:
     """Appelle le LLM pour le mode 3 et génère un texte de bilan annuel.
     
     Args:
-        data: Une liste pyton de toutes les interventions résumées par cook_report_interventions. Une intervention par élément.
+        data: Une liste python de toutes les interventions résumées par cook_report_interventions. Une intervention par élément.
 
     Returns:
         str: Un bloc de texte résumant toutes les interventions sous format de bilan annuel.
@@ -71,8 +73,19 @@ def cook_report_resume(data: list) -> str:
             {
                 "role": "system",
                 "content": """
-                Tu es un assistant qui produit un bilan annuel sur la base d'une liste d'interventions résumées. Rédige un paragraphe argumenté
-                sur les données qui te sont fournies en entrée. N'invente aucune information. Ton format de sortie doit être une string. 
+                Tu es un assistant qui reçoit une liste Python contenant des interventions et génère en sortie un bilan annuel sous forme de string. 
+                Ta mission sera accomplie si tu parviens à respecter toutes les règles suivantes:
+                    Prends le temps de faire ce bilan
+                    Tu ne dois pas inventer des informations que tu n'aurais pas eues dans la liste d'interventions reçue en entrée.
+                    Le bilan doit être rédigé sous la forme d'un seul paragraphe
+                    Tu d'adresses au client en employant le pronom nous.
+                    N'utilise jamais le mot "client". Utilise le pronom "vous" à la place.
+                    N'utilise jamais cette phrase "Nous n'avons pas d'autres informations à vous communiquer."
+                    si le bilan == positif:
+                        conclus le avec cette phrase "Nous tenons à vous remercier pour votre confiance et nous restons à votre disposition pour toute demande d'intervention future"
+                    sinon:
+                        conclus avec cette phrase "Soyez assurés que nous sommes dans une démarche d'amélioration continue et nous efforçons de vous rendre le meilleur service" 
+                    Ton format de sortie doit être une string contenant au maximum 2000 caractères
                 """,
             },
             {"role": "user", "content": all_interventions},
