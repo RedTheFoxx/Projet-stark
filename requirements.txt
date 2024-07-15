@@ -3,3 +3,4 @@ openai
 openpyxl
 python-docx
 streamlit
+python-dotenv
