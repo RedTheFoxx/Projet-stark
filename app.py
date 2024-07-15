@@ -35,11 +35,23 @@ st.image("ressources/data/logo_stark_red.png", width=350)
 st.markdown(
     """
 # Rapports et compte-rendus
-*Bienvenue sur votre interface de génération automatisée de rapports.*\n
-⚠️*Toute utilisation de système basé sur de l'IA générative implique des principes de précaution et de responsabilité.*\n 
-Le système peut être sujet à des hallucinations et impose une vérification humaine des données produites.
+*Bienvenue sur votre interface de génération automatisée de rapports.*
 """
 )
+
+col1, col2 = st.columns([1, 30])
+with col1:
+    st.image("ressources/data/warning_logo.png", width=47,)
+with col2:
+    st.markdown(
+        """
+        <div style="border: 1px solid #a0a0a0; border-radius: 5px; padding: 10px; text-align: center;">
+        Attention : Toute utilisation de système basé sur de l'IA générative implique des principes de précaution et de responsabilité.
+        Le système peut être sujet à des hallucinations et impose une vérification humaine des données produites.
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 st.markdown("---")
 
@@ -110,16 +122,16 @@ if st.button("Générer", type="primary", use_container_width=True):
                 st.success(f"{nb_records} rapport(s) généré(s) avec succès !")
                 # On a tout généré dans output, on va pouvoir les télécharger ci-dessous
 
-                # Une ligne par fichier et son bouton de téléchargement personnel
-                st.subheader("Télécharger les rapports individuels")
-                for file in generated_files:
-                    with open(file, "rb") as f:
-                        st.download_button(
-                            label=f"Télécharger {os.path.basename(file)}",
-                            data=f,
-                            file_name=os.path.basename(file),
-                            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                        )
+                # # Une ligne par fichier et son bouton de téléchargement personnel
+                # st.subheader("Télécharger les rapports individuels")
+                # for file in generated_files:
+                #     with open(file, "rb") as f:
+                #         st.download_button(
+                #             label=f"Télécharger {os.path.basename(file)}",
+                #             data=f,
+                #             file_name=os.path.basename(file),
+                #             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                #         )
 
                 # Tous les rapports d'un coup en ZIP
                 st.subheader("Tout télécharger (.zip)")
@@ -217,15 +229,15 @@ if st.button("Générer", type="primary", use_container_width=True):
         if generated_reports:
             st.subheader("Télécharger les rapports générés")
 
-            # Téléchargement individuel des rapports
-            for report in generated_reports:
-                with open(f"output/{report}", "rb") as file:
-                    st.download_button(
-                        label=f"Télécharger {report}",
-                        data=file,
-                        file_name=report,
-                        mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-                    )
+            # # Téléchargement individuel des rapports
+            # for report in generated_reports:
+            #     with open(f"output/{report}", "rb") as file:
+            #         st.download_button(
+            #             label=f"Télécharger {report}",
+            #             data=file,
+            #             file_name=report,
+            #             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            #         )
 
             # Téléchargement de tous les rapports en ZIP
             st.subheader("Tout télécharger (.zip)")
